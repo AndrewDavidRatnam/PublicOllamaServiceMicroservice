@@ -2,11 +2,13 @@ from fastapi import FastAPI, HTTPException, Request
 import requests
 from starlette.status import HTTP_401_UNAUTHORIZED
 import os
+import dotenv
 
 app = FastAPI()
-
-LLM_SERVICE_URL = "http://llm-service:8001"
-API_KEYS = os.getenv("API_KEYS", "").split(",")
+dotenv.load_dotenv()
+API_KEYS = os.getenv("API_KEYS")
+print(API_KEYS)
+LLM_SERVICE_URL = "http://localhost:8001"
 
 def check_api_key(request: Request):
     api_key = request.headers.get("X-API-Key")

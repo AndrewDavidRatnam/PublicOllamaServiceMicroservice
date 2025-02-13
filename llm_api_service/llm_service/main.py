@@ -15,20 +15,13 @@ from ollama import chat
 
 app = FastAPI()
 
-# Round-robin load balancing
-OLLAMA_INSTANCES = [
-    {"base_url": "http://localhost:11436"},
-    {"base_url": "http://localhost:11435"},
-    {"base_url": "http://localhost:11437"}
-]
-ollama_cycle = cycle(OLLAMA_INSTANCES)
+base_url = "http://localhost:11434"
 
 @app.post("/generate")
 async def generate_text(request: dict):
     # Get the next available Ollama instance
-    instance = next(ollama_cycle)
-    client = ollama.Client(host=instance["base_url"])
-    logging.info("URL:",instance["base_url"])
+    client = ollama.Client(host=base_url)
+    logging.info("URL:",base_url)
     try:
         response = client.chat(model="llama3.2:3b-instruct-q5_K_S", messages=[
             {"role":"user",
