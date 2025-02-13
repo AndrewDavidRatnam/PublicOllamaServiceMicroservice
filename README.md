@@ -1,1 +1,2 @@
 # PublicOllamaServiceMicroservice
+curl -X POST https://expert-enigma-6jrjw9rqq97c4667-8000.app.github.dev/process      -H "API-Key: <api_key_here>"      -H "Content-Type: application/json"      -d '{"prompt": "Hello, world!"}'

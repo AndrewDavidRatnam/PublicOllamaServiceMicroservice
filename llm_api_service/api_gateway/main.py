@@ -15,6 +15,7 @@ LLM_SERVICE_URL = "http://localhost:8001"
 api_key_header = APIKeyHeader(name="API-Key")
 
 def verify_api_key(api_key: str = Depends(api_key_header)):
+    logging.info("IN verify api key")
     if api_key not in API_KEYS:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -23,6 +24,7 @@ def verify_api_key(api_key: str = Depends(api_key_header)):
 
 @app.post("/process")
 async def process_request(request: Request, api_key: str = Depends(verify_api_key)):
+    logging.info("IN process request")
     try:
         body = await request.json()
         async with httpx.AsyncClient() as client:
