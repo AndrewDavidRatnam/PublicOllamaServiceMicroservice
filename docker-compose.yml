@@ -1,0 +1,87 @@
+version: '3.8'
+services:
+  copy-models:
+    image: busybox
+    volumes:
+      - ./models:/models
+      - ./model1:/model1
+      - ./model2:/model2
+      - ./model3:/model3
+    command: >
+      sh -c "cp -r /models/* /model1/ && \
+             cp -r /models/* /model2/ && \
+             cp -r /models/* /model3/"
+    restart: "no"
+  
+    networks:
+      - ollama-network
+
+  ollama-1:
+    image: ollama/ollama:latest
+    ports:
+      - "11437:11437"
+    volumes:
+      - ./model1:/root/.ollama/models
+    environment:
+      - OLLAMA_MODELS=/root/.ollama/models
+    depends_on:
+      - copy-models
+    command: serve
+    networks:
+      - ollama-network
+
+  ollama-2:
+    image: ollama/ollama:latest
+    ports:
+      - "11435:11435"
+    volumes:
+      - ./model2:/root/.ollama/models
+    environment:
+      - OLLAMA_MODELS=/root/.ollama/models
+    depends_on:
+      - copy-models
+    command: serve
+    networks:
+      - ollama-network
+
+  ollama-3:
+    image: ollama/ollama:latest
+    ports:
+      - "11436:11436"
+    volumes:
+      - ./model3:/root/.ollama/models
+    environment:
+      - OLLAMA_MODELS=/root/.ollama/models
+    depends_on:
+      - copy-models
+    command: serve
+    networks:
+      - ollama-network
+
+  llm-service:
+    build: ./llm_service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - ollama-1
+      - ollama-2
+      - ollama-3
+    networks:
+      - ollama-network
+
+  api-gateway:
+    build: ./api_gateway
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api_gateway/logs:/app/logs
+    depends_on:
+      - llm-service
+    environment:
+      - API_KEYS=your_secret_key_1,your_secret_key_2
+    networks:
+      - ollama-network
+
+networks:
+  ollama-network:
+    external: true
