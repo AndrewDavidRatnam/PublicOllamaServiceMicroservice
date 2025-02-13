@@ -18,7 +18,7 @@ def verify_api_key(api_key: str = Depends(api_key_header)):
     logging.info("IN verify api key")
     if api_key not in API_KEYS:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=HTTP_401_UNAUTHORIZED,
             detail="Invalid API Key"
         )
 
